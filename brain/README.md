@@ -1,81 +1,47 @@
-# Popcorn Brain Lab — first original model
+# Popcorn Brain Lab
 
-This folder is the first **from-scratch model experiment** for Popcorn AI. It implements a small decoder-only Transformer language model in PyTorch. Its architecture, tokenizer, training loop, checkpoint format and sampling code are ours in this repository; PyTorch supplies tensor operations and GPU kernels.
+An experimental decoder-only Transformer and supporting intelligence-platform components. The model architecture, tokenizer, training loop, evaluation code and supporting systems are implemented in this repository; PyTorch supplies tensor operations and GPU kernels.
 
-## Honest scope
+## Honest status
 
-This is a research prototype, not a ChatGPT/Gemini replacement. A randomly initialised model trained on a small dataset will initially produce poor text. Useful conversational ability requires a large, legally usable dataset, substantial compute, careful evaluation and many training iterations. The existing website's live chat still uses the configured Cloudflare Workers AI model; this experiment does not silently replace it.
+This is an early research prototype, not a frontier assistant. A small randomly initialised model trained on the included starter corpus will not be a useful general-purpose chatbot. Natural conversation and strong coding ability require substantial licensed training data, compute, iteration and independent evaluation. The existing website's live chat remains on its existing Cloudflare model; this lab does not replace it.
 
-## Requirements
+## Browser-only cloud workflow
 
-- Python 3.10+
-- PyTorch 2.2+
-- A GPU is helpful but not required. CPU training is much slower.
-- Training data you have permission to use. Do not put private conversations, secrets, credentials or personal data in training files.
+The repository includes a GitHub Actions workflow called **Popcorn Brain Cloud Training**. It can run a small training job on a GitHub-hosted runner and save checkpoints as an Actions artifact. Training happens on GitHub's runner, not your PC. The starter corpus is only a pipeline smoke-test corpus; it is not enough for meaningful intelligence. The workflow is manual and does not automatically deploy model weights to Vercel.
 
-## Run on Windows
+To run it without installing anything locally:
+1. Open this repository on GitHub.
+2. Select **Actions**.
+3. Select **Popcorn Brain Cloud Training**.
+4. Choose **Run workflow** and use the safe defaults for the first smoke test.
+5. Open the completed run and inspect its logs and checkpoint artifact.
 
-From the repository root in PowerShell:
+GitHub-hosted CPU runners are suitable for small experiments, not frontier-model training. Larger training needs suitable hosted GPU compute and a properly licensed dataset. Availability and free quotas depend on the provider.
 
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r brain/requirements.txt
-python brain/train.py --data brain/data/starter.jsonl --out brain/checkpoints/first-run --max-iters 300
-python brain/generate.py --checkpoint brain/checkpoints/first-run/latest.pt --prompt "Explain what a Python function is:"
-python brain/evaluate.py --checkpoint brain/checkpoints/first-run/latest.pt --data brain/data/starter.jsonl
-```
+## Model and tokenizer
 
-If PowerShell blocks activation, run the commands in Command Prompt instead, replacing activation with `.venv\Scripts\activate.bat`.
+- The model is a decoder-only Transformer with causal self-attention and residual blocks.
+- Byte-level UTF-8 tokenisation represents source code and all UTF-8 text without an unknown-character vocabulary.
+- The previous character tokenizer remains readable for older experimental checkpoints.
+- Training supports document-level train/validation splitting, resumable optimizer state, latest and best checkpoints, gradient clipping and metrics.
+- Generation, held-out next-token loss and a multi-language heuristic coding smoke benchmark are included.
+- The coding benchmark does not execute generated code or prove semantic correctness.
+- Dataset validation checks JSONL structure, duplicates and likely secrets. Manual rights and privacy review is still required.
 
-## Data format
+## Supporting intelligence systems
 
-One JSON object per line, with a `text` string:
+- Memory prototype: SQLite storage; saving requires explicit confirmation and likely credentials are rejected. It is not connected to live chat and needs a durable server database adapter before production use.
+- Reasoning planner: validates structured plans against an allowlist. Plans do not execute tools.
+- Coding workspace core: validates coding tasks and proposed patches, blocks unsafe paths and likely secrets. It does not write files or execute code.
+- Evolution gate: compares candidate scores and regression metrics. A passing candidate is only eligible for human review; it is never automatically promoted or deployed.
 
-```json
-{"text":"A Python function is defined with def, followed by its name and parameters."}
-```
+## Data and checkpoints
 
-The included starter file is only a tiny smoke-test corpus. It is not enough to create a capable assistant. Use curated, licensed and reviewed datasets for serious experiments.
+Each JSONL line must contain a text string. Only use data you have permission to train on. Do not include private conversations, personal data, credentials or secrets. The included starter corpus is a tiny smoke-test dataset.
 
-## Training controls
+Checkpoint files use PyTorch's pickle-backed format. Only load checkpoints you created or otherwise trust. The cloud workflow stores artifacts temporarily; it does not connect them to the production website.
 
-- `--max-iters`: number of optimiser steps (default 1000)
-- `--batch-size`: examples per step (default 32)
-- `--block-size`: context length in characters (default 128)
-- `--eval-interval`: validation interval (default 100)
-- `--device auto|cpu|cuda|mps`: compute device
-- `--seed`: repeatable initialisation
+## Safety and deployment boundaries
 
-Checkpoints include the model weights, vocabulary and model configuration. Keep multiple checkpoints; do not overwrite a known-good model.
-
-## Evaluation and safe improvement
-
-`evaluate.py` measures held-out next-character loss/perplexity. That is a useful training signal, **not proof of factual accuracy or coding ability**. `benchmark.py` runs a tiny coding-output smoke test using required text fragments; it does not execute code or verify semantic correctness. Use broader human-reviewed coding and conversation tests before considering a model improvement successful.
-
-Run the coding smoke test after training:
-
-```powershell
-python brain/benchmark.py --checkpoint brain/checkpoints/first-run/latest.pt
-```
-
-Run the unit tests from the brain directory:
-
-```powershell
-Set-Location brain
-python -m unittest discover -s tests -v
-Set-Location ..
-```
-
-This lab deliberately does not let the model rewrite or deploy its own code, access GitHub credentials, execute generated code, or promote new weights automatically. A future evolution service should run experiments in isolation, compare against fixed regression benchmarks, retain rollback checkpoints and require explicit approval before production changes.
-
-## Architecture
-
-- `src/popcorn_brain.py`: character tokenizer, causal self-attention, Transformer blocks and model.
-- `train.py`: training/validation loop and checkpointing.
-- `generate.py`: autoregressive text sampling.
-- `evaluate.py`: held-out loss evaluation.
-- `tests/`: basic architecture and causal-mask tests.
-
-Vercel remains the web host. It is not the right place to run long GPU training jobs; train on a suitable machine or dedicated compute host, then store/version the resulting checkpoint separately. The web app should only connect to a model-serving endpoint when one is deliberately configured.
+No autonomous repository writes, arbitrary shell execution, credential access, self-deployment or automatic production model promotion is enabled. The live chat and Vercel deployment remain unchanged. Memory is a prototype and is not synced between devices. GitHub Actions installs dependencies on its hosted runner; nothing needs to be downloaded or installed on your PC.
