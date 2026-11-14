@@ -1,0 +1,46 @@
+name: Popcorn Brain Cloud Training
+on:
+  workflow_dispatch:
+    inputs:
+      max_iters:
+        description: "Total training steps (starter corpus is only for smoke tests)"
+        required: true
+        default: "50"
+        type: choice
+        options: ["10", "25", "50", "100", "250"]
+      block_size:
+        description: "Context length in bytes"
+        required: true
+        default: "64"
+        type: choice
+        options: ["16", "32", "64"]
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU PyTorch on the GitHub runner
+        run: python -m pip install --upgrade pip
+      - name: Install CPU PyTorch
+        run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Validate training data
+        run: python brain/validate_dataset.py --data brain/data/starter.jsonl
+      - name: Train on GitHub-hosted runner
+        run: >-
+          python brain/train.py --data brain/data/starter.jsonl
+          --out /tmp/popcorn-brain-checkpoints
+          --max-iters ${{ inputs.max_iters }}
+          --block-size ${{ inputs.block_size }}
+          --batch-size 4 --eval-interval 10 --device cpu
+      - name: Upload checkpoint artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: popcorn-brain-checkpoint-${{ github.run_number }}
+          path: /tmp/popcorn-brain-checkpoints/
+          retention-days: 7
