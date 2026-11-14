@@ -74,6 +74,14 @@ class AgentRuntimeTests(unittest.TestCase):
             )
 
 
+    def test_rejects_nested_and_compound_secret_fields(self):
+        report = run_plan(
+            [RuntimeStep("read_project_files", {"metadata": {"access_token": "hidden"}})],
+            {"read_project_files": lambda payload: self.fail("handler must not run")},
+        )
+        self.assertEqual(report.status, "failed")
+        self.assertEqual(report.records[0].detail, "ValueError")
+
     def test_invalid_payload_is_rejected_before_approval_callback(self):
         approvals = []
         report = run_plan(
