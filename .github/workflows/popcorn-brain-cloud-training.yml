@@ -38,9 +38,11 @@ jobs:
           --max-iters ${{ inputs.max_iters }}
           --block-size ${{ inputs.block_size }}
           --batch-size 4 --eval-interval 10 --device cpu
-      - name: Upload checkpoint artifact
+      - name: Evaluate trained checkpoint
+        run: python brain/eval_suite.py --checkpoint /tmp/popcorn-brain-checkpoints/latest.pt --output /tmp/popcorn-brain-checkpoints/evaluation-report.json --max-new-tokens 80 --device cpu
+      - name: Upload checkpoint and evaluation report
         uses: actions/upload-artifact@v4
         with:
-          name: popcorn-brain-checkpoint-${{ github.run_number }}
+          name: popcorn-brain-run-${{ github.run_number }}
           path: /tmp/popcorn-brain-checkpoints/
           retention-days: 7

@@ -45,3 +45,13 @@ Checkpoint files use PyTorch's pickle-backed format. Only load checkpoints you c
 ## Safety and deployment boundaries
 
 No autonomous repository writes, arbitrary shell execution, credential access, self-deployment or automatic production model promotion is enabled. The live chat and Vercel deployment remain unchanged. Memory is a prototype and is not synced between devices. GitHub Actions installs dependencies on its hosted runner; nothing needs to be downloaded or installed on your PC.
+
+## Repeatable model evaluation
+
+Run the fixed, hand-written development suite against a checkpoint:
+
+\`\`\`bash
+python brain/eval_suite.py --checkpoint path/to/latest.pt --output eval-report.json
+\`\`\`
+
+The suite covers conversation, basic reasoning, coding syntax, instruction following, basic knowledge and simple safety responses. It uses deterministic greedy decoding and reports results by category. Checks are case-insensitive phrase matches only; they are not semantic grading and cannot establish factuality, reasoning ability or safe behaviour. Keep this evaluation set separate from training data and use the same cases when comparing checkpoints. A small score is a debugging signal, not a claim of intelligence.
