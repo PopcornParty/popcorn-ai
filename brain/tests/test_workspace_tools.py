@@ -99,9 +99,9 @@ class WorkspaceToolsTests(unittest.TestCase):
     def test_plan_searches_only_candidate_workspace(self):
         self.workspace.write_text(
             "docs/guide.md",
-            "Popcorn AI uses a candidate workspace.\\nThe live site is separate.\\n",
+            "Popcorn AI uses a candidate workspace.\nThe live site is separate.\n",
         )
-        self.workspace.write_text("src/other.py", "def unrelated():\\n    return 1\\n")
+        self.workspace.write_text("src/other.py", "def unrelated():\n    return 1\n")
         plan = TaskPlan.from_dict({
             "goal": "Find candidate workspace notes",
             "steps": [{
@@ -134,14 +134,14 @@ class WorkspaceToolsTests(unittest.TestCase):
             "summary": "Added bounded workspace search.",
         })
 
-    def test_search_rejects_empty_query(self):
+    def test_search_rejects_overlong_query(self):
         plan = TaskPlan.from_dict({
             "goal": "Search",
             "steps": [{
                 "title": "Search",
                 "description": "Search candidate files",
                 "tool": "search_knowledge",
-                "arguments": {"query": "   "},
+                "arguments": {"query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
             }],
         })
         result = execute_workspace_plan(plan, self.workspace)
