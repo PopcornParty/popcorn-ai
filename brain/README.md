@@ -55,3 +55,31 @@ python brain/eval_suite.py --checkpoint path/to/latest.pt --output eval-report.j
 \`\`\`
 
 The suite covers conversation, basic reasoning, coding syntax, instruction following, basic knowledge and simple safety responses. It uses deterministic greedy decoding and reports results by category. Checks are case-insensitive phrase matches only; they are not semantic grading and cannot establish factuality, reasoning ability or safe behaviour. Keep this evaluation set separate from training data and use the same cases when comparing checkpoints. A small score is a debugging signal, not a claim of intelligence.
+
+
+## Bounded agent runtime core
+
+`brain/src/agent_runtime.py` adds a small orchestration layer for future
+trusted development-tool adapters. It runs at most 20 steps, accepts only
+actions named by the constitution, requires a positive per-action approval
+callback for protected actions, blocks unknown actions, stops on the first
+failure, rejects credential-shaped payload fields, and records a minimal
+audit trail without copying task payloads or handler exception text.
+
+**Important boundary:** this is not yet an autonomous repository editor or
+sandbox. It does not open files, run shell commands, access GitHub, call the
+network, or deploy anything. A host application must register narrowly scoped
+handlers and implement filesystem isolation, path/symlink checks, resource
+limits and test-command allowlists before any real tools are connected.
+
+
+## Restricted candidate workspace
+
+`brain/src/workspace.py` provides UTF-8 text reads, writes and file listing
+inside an explicitly supplied existing workspace directory. It rejects
+absolute/traversal paths, symlinks, hidden/configuration/credential paths,
+unapproved file extensions and files larger than 1 MB. It is intended for a
+private temporary candidate directory, not a user's home directory or a live
+repository. It does not execute code or commands. The host must provide
+single-writer isolation; this path-level guard is not a substitute for an OS
+sandbox or protection against a concurrent hostile process.

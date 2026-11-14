@@ -1,0 +1,31 @@
+name: Popcorn Agent Runtime Tests
+
+on:
+  push:
+    branches:
+      - "add-bounded-agent-runtime"
+  pull_request:
+    paths:
+      - "brain/src/agent_runtime.py"
+      - "brain/tests/test_agent_runtime.py"
+      - ".github/workflows/popcorn-agent-runtime-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run bounded agent runtime and workspace tests
+        env:
+          PYTHONPATH: brain
+        run: |
+          python -m unittest discover -s brain/tests -p "test_agent_runtime.py" -v
+          python -m unittest discover -s brain/tests -p "test_workspace.py" -v
