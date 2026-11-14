@@ -1,3 +1,8 @@
-{"id":"python-function","prompt":"Python: define a function called add that returns a + b.\nCompletion:\n","must_include":["def add","return"]}
-{"id":"javascript-constant","prompt":"JavaScript: declare a constant named total with value 42.\nCompletion:\n","must_include":["const total","42"]}
-{"id":"html-heading","prompt":"HTML: create an h1 heading containing Hello.\nCompletion:\n","must_include":["<h1>","Hello","</h1>"]}
+{"id":"python-function","language":"python","prompt":"Write a Python function named add that returns a + b.","must_include":["def add","return"]}
+{"id":"javascript-constant","language":"javascript","prompt":"Write JavaScript declaring const total = 42.","must_include":["const total","42"]}
+{"id":"typescript-type","language":"typescript","prompt":"Write a TypeScript type named User with a name string property.","must_include":["type User","name: string"]}
+{"id":"html-heading","language":"html","prompt":"Write an h1 heading containing Hello.","must_include":["<h1>","Hello","</h1>"]}
+{"id":"css-class","language":"css","prompt":"Write a CSS class named card with padding 16px.","must_include":[".card","padding","16px"]}
+{"id":"sql-select","language":"sql","prompt":"Write SQL selecting all columns from a table named users.","must_include":["SELECT","FROM","users"]}
+{"id":"csharp-method","language":"csharp","prompt":"Write a C# method named Add returning a + b.","must_include":["Add","return","a + b"]}
+{"id":"java-method","language":"java","prompt":"Write a Java method named greet that returns the string Hello.","must_include":["greet","return","Hello"]}
