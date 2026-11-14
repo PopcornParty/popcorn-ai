@@ -62,7 +62,9 @@ class TaskPlan:
             allowed = _TOOL_ARGUMENTS.get(tool, set())
             if set(arguments) - allowed:
                 raise ValueError(f"Step {n} contains unsupported arguments")
-            if tool is not None and set(arguments) != allowed:
+            # Legacy plans may describe a tool without executable arguments.
+            # Once any arguments are supplied, require the complete schema.
+            if tool is not None and arguments and set(arguments) != allowed:
                 raise ValueError(f"Step {n} is missing required tool arguments")
             if tool is None and arguments:
                 raise ValueError(f"Step {n} cannot have arguments without a tool")
