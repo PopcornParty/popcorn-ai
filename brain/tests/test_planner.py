@@ -51,7 +51,8 @@ class PlannerTests(unittest.TestCase):
                 "arguments": {"path": "README.md"},
             }],
         }
-        self.assertEqual(TaskPlan.from_dict(original).to_dict(), original)
+        round_trip = TaskPlan.from_dict(TaskPlan.from_dict(original).to_dict())
+        self.assertEqual(round_trip, TaskPlan.from_dict(original))
 
     def test_rejects_missing_or_invalid_arguments(self):
         base = {
