@@ -16,7 +16,8 @@ MAX_STEPS = 20
 MAX_PAYLOAD_BYTES = 16_384
 BLOCKED_PAYLOAD_KEYS = frozenset({
     "password", "passwd", "secret", "token", "api_key", "apikey",
-    "private_key", "authorization", "cookie", "credential",
+    "private_key", "access_key", "authorization", "cookie", "credential",
+    "bearer",
 })
 
 Handler = Callable[[dict[str, Any]], Any]
@@ -67,8 +68,12 @@ def _validate_payload(payload: Any) -> dict[str, Any]:
             for key, child in value.items():
                 if not isinstance(key, str):
                     raise ValueError("Payload keys must be strings")
-                normalized = key.casefold().replace("-", "_")
-                if normalized in BLOCKED_PAYLOAD_KEYS:
+                normalized = key.casefold().replace("-", "_").replace(".", "_")
+                key_parts = set(normalized.split("_"))
+                if normalized in BLOCKED_PAYLOAD_KEYS or key_parts & {
+                    "password", "passwd", "secret", "token", "authorization",
+                    "cookie", "credential", "bearer",
+                } or normalized.endswith("_api_key"):
                     raise ValueError("Payloads must not contain credentials or secret fields")
                 inspect(child)
         elif isinstance(value, list):
@@ -104,7 +109,7 @@ def run_plan(
             records.append(StepRecord(index, "<invalid>", "failed", "Invalid step object"))
             return RuntimeReport("failed", tuple(records))
         action = step.action
-        if not isinstance(action, str) or not action:
+        if not isinstance(action, str) or not action or len(action) > 80:
             records.append(StepRecord(index, "<invalid>", "failed", "Invalid action"))
             return RuntimeReport("failed", tuple(records))
         if action not in AUTONOMOUS_ACTIONS and action not in APPROVAL_REQUIRED_ACTIONS:
