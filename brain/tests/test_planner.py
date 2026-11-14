@@ -61,7 +61,7 @@ class PlannerTests(unittest.TestCase):
                 "title": "Read",
                 "description": "Read a file",
                 "tool": "read_repository_file",
-                "arguments": {},
+                "arguments": {"path": "src/app.py", "extra": "not-allowed"},
             }],
         }
         with self.assertRaises(ValueError):
