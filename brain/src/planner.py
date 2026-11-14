@@ -38,7 +38,7 @@ class TaskPlan:
             raise ValueError("Plan goal must contain 1–1000 characters")
         if not isinstance(raw, list) or not 1 <= len(raw) <= 20:
             raise ValueError("A plan must contain between 1 and 20 steps")
-        if risk not in {"low", "medium", "high"}:
+        if not isinstance(risk, str) or risk not in {"low", "medium", "high"}:
             raise ValueError("risk must be low, medium or high")
         steps = []
         for n, item in enumerate(raw, 1):
