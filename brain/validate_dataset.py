@@ -6,11 +6,11 @@ from collections import Counter
 from pathlib import Path
 
 SECRET_PATTERNS = [
-    re.compile(r"(?i)(api[_-]?key|access[_-]?token|client[_-]?secret)\\s*[:=]\\s*['\\"]?[^\\s'\\"]{8,}"),
+    re.compile(r"(?i)(api[_-]?key|access[_-]?token|client[_-]?secret)\s*[:=]\s*['\"]?[^\s'\"]{8,}"),
     re.compile(r"(?i)-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----"),
-    re.compile(r"(?i)password\\s*[:=]\\s*\\S{6,}"),
+    re.compile(r"(?i)password\s*[:=]\s*\S{6,}"),
 ]
-EMAIL_PATTERN = re.compile(r"(?i)\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b")
+EMAIL_PATTERN = re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b")
 REQUIRED_METADATA = ("source", "license", "permission")
 
 
