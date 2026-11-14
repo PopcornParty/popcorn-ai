@@ -67,11 +67,12 @@ class AgentRuntimeTests(unittest.TestCase):
     def test_rejects_oversized_plans_and_payloads(self):
         with self.assertRaises(ValueError):
             run_plan([RuntimeStep("plan_task") for _ in range(21)], {})
-        with self.assertRaises(ValueError):
-            run_plan(
-                [RuntimeStep("plan_task", {"text": "x" * 20_000})],
-                {"plan_task": lambda payload: None},
-            )
+        oversized_payload = run_plan(
+            [RuntimeStep("plan_task", {"text": "x" * 20_000})],
+            {"plan_task": lambda payload: self.fail("handler must not run")},
+        )
+        self.assertEqual(oversized_payload.status, "failed")
+        self.assertEqual(oversized_payload.records[0].detail, "ValueError")
 
 
     def test_rejects_nested_and_compound_secret_fields(self):
