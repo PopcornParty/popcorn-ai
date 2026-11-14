@@ -60,14 +60,15 @@ def main():
  print(f"Device: {device}; parameters: {sum(p.numel() for p in model.parameters()):,}; tokenizer: byte-v1; train bytes: {len(train)}; validation bytes: {len(val)}")
  if start>=a.max_iters: raise ValueError(f"Checkpoint is at step {start}; set --max-iters higher")
  for step in range(start,a.max_iters):
-  if step%a.eval_interval==0 or step==a.max_iters-1:
-   metric=losses(); history.append({"step":step,**metric}); improved=metric["validation"]<best
+  x,y=batch(train); _,loss=model(x,y); opt.zero_grad(set_to_none=True); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.); opt.step()
+  completed=step+1
+  if completed%a.eval_interval==0 or completed==a.max_iters:
+   metric=losses(); history.append({"step":completed,**metric}); improved=metric["validation"]<best
    if improved: best=metric["validation"]
-   payload={"format_version":2,"tokenizer":tok.to_dict(),"model_config":config.__dict__,"model_state":model.state_dict(),"optimizer_state":opt.state_dict(),"training":{"step":step,"next_step":step,"seed":a.seed,"device":str(device),"best_validation_loss":best,"metrics":history}}
+   payload={"format_version":2,"tokenizer":tok.to_dict(),"model_config":config.__dict__,"model_state":model.state_dict(),"optimizer_state":opt.state_dict(),"training":{"step":completed,"next_step":completed,"seed":a.seed,"device":str(device),"best_validation_loss":best,"metrics":history}}
    torch.save(payload,a.out/"latest.pt")
    if improved or not (a.out/"best.pt").exists(): torch.save(payload,a.out/"best.pt")
    (a.out/"metrics.json").write_text(json.dumps(history,indent=2)+"\n",encoding="utf-8")
-   print(f"step {step:5d} | train {metric['train']:.4f} | validation {metric['validation']:.4f} | best {best:.4f}")
-  x,y=batch(train); _,loss=model(x,y); opt.zero_grad(set_to_none=True); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(),1.); opt.step()
+   print(f"step {completed:5d} | train {metric['train']:.4f} | validation {metric['validation']:.4f} | best {best:.4f}")
  print(f"Saved latest and best checkpoints in {a.out}")
 if __name__=="__main__": main()
