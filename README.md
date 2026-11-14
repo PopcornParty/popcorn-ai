@@ -38,3 +38,7 @@ The Cloudflare Worker requires:
 This version is an AI chat workspace, not yet an autonomous coding agent. It does not currently have permission to inspect or edit GitHub repositories, run code, or deploy projects on its own. File attachments currently support text-based files only. Chat history in the sidebar is stored in the current browser and does not automatically sync between devices.
 
 Cloudflare's free usage is subject to provider quotas and limits.
+
+## Experimental from-scratch model lab
+
+The repository now includes `brain/`, a separate PyTorch character-level Transformer experiment with its own tokenizer, training loop, checkpointing, text generation and validation-loss evaluator. It is an early research prototype, not a production chat model. The live chat path remains unchanged and continues to use the Cloudflare Worker model until a separately hosted Popcorn model is trained, evaluated and deliberately integrated. See [brain/README.md](brain/README.md) for setup, dataset format and limitations.
