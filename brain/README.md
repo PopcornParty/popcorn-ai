@@ -71,3 +71,15 @@ sandbox. It does not open files, run shell commands, access GitHub, call the
 network, or deploy anything. A host application must register narrowly scoped
 handlers and implement filesystem isolation, path/symlink checks, resource
 limits and test-command allowlists before any real tools are connected.
+
+
+## Restricted candidate workspace
+
+`brain/src/workspace.py` provides UTF-8 text reads, writes and file listing
+inside an explicitly supplied existing workspace directory. It rejects
+absolute/traversal paths, symlinks, hidden/configuration/credential paths,
+unapproved file extensions and files larger than 1 MB. It is intended for a
+private temporary candidate directory, not a user's home directory or a live
+repository. It does not execute code or commands. The host must provide
+single-writer isolation; this path-level guard is not a substitute for an OS
+sandbox or protection against a concurrent hostile process.
