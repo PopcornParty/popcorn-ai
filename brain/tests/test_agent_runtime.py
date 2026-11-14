@@ -1,6 +1,6 @@
 import unittest
 
-from brain.src.agent_runtime import RuntimeStep, run_plan
+from src.agent_runtime import RuntimeStep, run_plan
 
 
 class AgentRuntimeTests(unittest.TestCase):
