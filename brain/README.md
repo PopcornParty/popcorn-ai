@@ -93,6 +93,11 @@ they are confined to the supplied workspace; they do not modify the live
 repository. The adapter preflights the complete plan and rejects unsupported
 tools before doing any work.
 
-The adapter currently does **not** execute tests, shell commands, Git actions,
-network requests, or deployments. Test execution remains unavailable until a
-fixed test-suite allowlist and an isolated execution host are implemented.
+The adapter can now perform four bounded operations inside the supplied
+candidate workspace: read a file, search text files with file/byte/result caps,
+write candidate code, and return a prepared summary. Search never reaches the
+live repository or the network. Generated code is not executed.
+
+The adapter still does **not** run tests, shell commands, Git actions, network
+requests, or deployments. Test execution remains unavailable until a fixed
+test-suite allowlist and an isolated execution host are implemented.
