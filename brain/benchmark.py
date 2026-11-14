@@ -41,7 +41,7 @@ def main() -> None:
         prompt_ids = tokenizer.encode(case["prompt"]) or [1]
         context = torch.tensor([prompt_ids], dtype=torch.long, device=device)
         generated = model.generate(context, max_new_tokens=args.max_new_tokens, temperature=0.01, top_k=1)
-        answer = tokenizer.decode(generated[0].tolist())[len(case["prompt"]):]
+        answer = tokenizer.decode(generated[0, len(prompt_ids):].tolist())
         missing = [fragment for fragment in case["must_include"] if fragment not in answer]
         results.append({"id": case.get("id", f"case-{len(results) + 1}"), "passed": not missing, "missing_fragments": missing, "output": answer[:500]})
 
