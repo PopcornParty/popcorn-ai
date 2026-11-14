@@ -73,6 +73,27 @@ class AgentRuntimeTests(unittest.TestCase):
                 {"plan_task": lambda payload: None},
             )
 
+
+    def test_invalid_payload_is_rejected_before_approval_callback(self):
+        approvals = []
+        report = run_plan(
+            [RuntimeStep("deploy_production", {"token": "never-forward"})],
+            {"deploy_production": lambda payload: None},
+            approve=lambda action, payload: approvals.append(action) or True,
+        )
+        self.assertEqual(report.status, "failed")
+        self.assertEqual(approvals, [])
+
+    def test_approval_callback_exception_fails_closed(self):
+        calls = []
+        report = run_plan(
+            [RuntimeStep("deploy_production", {"target": "live"})],
+            {"deploy_production": lambda payload: calls.append(payload)},
+            approve=lambda action, payload: (_ for _ in ()).throw(RuntimeError("no")),
+        )
+        self.assertEqual(report.status, "approval_required")
+        self.assertEqual(calls, [])
+
     def test_report_is_json_serializable_and_does_not_include_payload(self):
         report = run_plan(
             [RuntimeStep("plan_task", {"goal": "private project name"})],
