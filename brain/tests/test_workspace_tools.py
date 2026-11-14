@@ -17,7 +17,7 @@ class WorkspaceToolsTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_plan_reads_candidate_file_and_returns_content(self):
-        self.workspace.write_text("src/app.py", "print('hello')\n")
+        self.workspace.write_text("src/app.py", "print('hello')\\n")
         plan = TaskPlan.from_dict({
             "goal": "Inspect a source file",
             "steps": [{
@@ -29,7 +29,7 @@ class WorkspaceToolsTests(unittest.TestCase):
         })
         result = execute_workspace_plan(plan, self.workspace)
         self.assertEqual(result.status, "completed")
-        self.assertEqual(result.outputs[0]["content"], "print('hello')\n")
+        self.assertEqual(result.outputs[0]["content"], "print('hello')\\n")
 
     def test_plan_writes_only_to_candidate_workspace(self):
         plan = TaskPlan.from_dict({
@@ -38,12 +38,12 @@ class WorkspaceToolsTests(unittest.TestCase):
                 "title": "Create module",
                 "description": "Write candidate code",
                 "tool": "propose_patch",
-                "arguments": {"path": "src/new.py", "content": "VALUE = 42\n"},
+                "arguments": {"path": "src/new.py", "content": "VALUE = 42\\n"},
             }],
         })
         result = execute_workspace_plan(plan, self.workspace)
         self.assertEqual(result.status, "completed")
-        self.assertEqual(self.workspace.read_text("src/new.py"), "VALUE = 42\n")
+        self.assertEqual(self.workspace.read_text("src/new.py"), "VALUE = 42\\n")
         self.assertEqual(result.outputs[0]["status"], "written_to_candidate_workspace")
 
     def test_unsupported_tools_are_rejected_before_any_write(self):
@@ -95,13 +95,12 @@ class WorkspaceToolsTests(unittest.TestCase):
                 }],
             })
 
-
     def test_plan_searches_only_candidate_workspace(self):
         self.workspace.write_text(
             "docs/guide.md",
-            "Popcorn AI uses a candidate workspace.\nThe live site is separate.\n",
+            "Popcorn AI uses a candidate workspace.\\nThe live site is separate.\\n",
         )
-        self.workspace.write_text("src/other.py", "def unrelated():\n    return 1\n")
+        self.workspace.write_text("src/other.py", "def unrelated():\\n    return 1\\n")
         plan = TaskPlan.from_dict({
             "goal": "Find candidate workspace notes",
             "steps": [{
@@ -141,12 +140,13 @@ class WorkspaceToolsTests(unittest.TestCase):
                 "title": "Search",
                 "description": "Search candidate files",
                 "tool": "search_knowledge",
-                "arguments": {"query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
+                "arguments": {"query": "x" * 121},
             }],
         })
         result = execute_workspace_plan(plan, self.workspace)
         self.assertEqual(result.status, "failed")
         self.assertEqual(result.outputs, ())
+
 
 if __name__ == "__main__":
     unittest.main()
