@@ -3,14 +3,15 @@ import argparse,json,random
 from pathlib import Path
 import torch
 from src.popcorn_brain import ByteTokenizer,ModelConfig,PopcornBrain,tokenizer_from_checkpoint
+from validate_dataset import inspect_dataset
 def load_texts(path:Path)->list[str]:
+ report=inspect_dataset(path)
+ if not report["ready_for_training"]:
+  raise ValueError("Dataset is not approved for training. Run brain/validate_dataset.py and fix all reported issues.")
  texts=[]; seen=set()
- for n,line in enumerate(path.read_text(encoding="utf-8").splitlines(),1):
+ for line in path.read_text(encoding="utf-8").splitlines():
   if not line.strip(): continue
-  try: item=json.loads(line)
-  except json.JSONDecodeError as exc: raise ValueError(f"Invalid JSON on line {n}: {exc}") from exc
-  if not isinstance(item,dict) or not isinstance(item.get("text"),str) or not item["text"].strip(): raise ValueError(f"Line {n} must contain a non-empty string field named 'text'")
-  value=item["text"].strip()
+  value=json.loads(line)["text"].strip()
   if value not in seen: texts.append(value); seen.add(value)
  if len(texts)<3: raise ValueError("Provide at least three unique non-empty training examples")
  return texts
