@@ -33,7 +33,7 @@ GitHub-hosted CPU runners are suitable for small experiments, not frontier-model
 
 - Memory prototype: SQLite storage; saving requires explicit confirmation and likely credentials are rejected. It is not connected to live chat and needs a durable server database adapter before production use.
 - Reasoning planner: validates structured plans against an allowlist. Plans do not execute tools.
-- Coding workspace core: validates coding tasks and proposed patches, blocks unsafe paths and likely secrets. It does not write files or execute code.
+- Coding workspace: validates structured plans and confines candidate-code reads/writes to a supplied isolated workspace. It does not modify the live repository or execute code.
 - Evolution gate: compares candidate scores and regression metrics. A passing candidate is only eligible for human review; it is never automatically promoted or deployed.
 
 ## Data and checkpoints
