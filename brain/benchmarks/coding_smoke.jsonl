@@ -1,0 +1,3 @@
+{"id":"python-function","prompt":"Python: define a function called add that returns a + b.\nCompletion:\n","must_include":["def add","return"]}
+{"id":"javascript-constant","prompt":"JavaScript: declare a constant named total with value 42.\nCompletion:\n","must_include":["const total","42"]}
+{"id":"html-heading","prompt":"HTML: create an h1 heading containing Hello.\nCompletion:\n","must_include":["<h1>","Hello","</h1>"]}
