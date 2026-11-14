@@ -32,6 +32,10 @@ def execute_workspace_plan(plan: TaskPlan, workspace: CandidateWorkspace) -> Wor
     unsupported = [step.tool for step in plan.steps if step.tool not in supported]
     if unsupported:
         raise ValueError("Plan contains tools not available in the workspace adapter")
+    required = {"read_repository_file": {"path"}, "propose_patch": {"path", "content"}}
+    for step in plan.steps:
+        if set(step.arguments) != required[step.tool]:
+            raise ValueError("Executable step is missing required arguments")
 
     outputs: list[dict[str, Any]] = []
     runtime_steps = []
