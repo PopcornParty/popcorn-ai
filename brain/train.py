@@ -69,7 +69,7 @@ def main():
    payload={"format_version":2,"tokenizer":tok.to_dict(),"model_config":config.__dict__,"model_state":model.state_dict(),"optimizer_state":opt.state_dict(),"training":{"step":completed,"next_step":completed,"seed":a.seed,"device":str(device),"best_validation_loss":best,"metrics":history}}
    torch.save(payload,a.out/"latest.pt")
    if improved or not (a.out/"best.pt").exists(): torch.save(payload,a.out/"best.pt")
-   (a.out/"metrics.json").write_text(json.dumps(history,indent=2)+"\\n",encoding="utf-8")
+   (a.out/"metrics.json").write_text(json.dumps(history,indent=2)+"\n",encoding="utf-8")
    print(f"step {completed:5d} | train {metric['train']:.4f} | validation {metric['validation']:.4f} | best {best:.4f}")
  print(f"Saved latest and best checkpoints in {a.out}")
 if __name__=="__main__": main()
