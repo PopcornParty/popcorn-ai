@@ -27,7 +27,7 @@ def main() -> None:
     model = PopcornBrain(config).to(device)
     model.load_state_dict(checkpoint["model_state"])
     model.eval()
-    prompt_ids = tokenizer.encode(args.prompt) or [1]
+    prompt_ids = tokenizer.encode(args.prompt) or [0]
     context = torch.tensor([prompt_ids], dtype=torch.long, device=device)
     result = model.generate(context, args.max_new_tokens, args.temperature, args.top_k)
     print(tokenizer.decode(result[0].tolist()))
