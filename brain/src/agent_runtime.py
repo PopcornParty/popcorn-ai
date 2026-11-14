@@ -110,8 +110,17 @@ def run_plan(
         if action not in AUTONOMOUS_ACTIONS and action not in APPROVAL_REQUIRED_ACTIONS:
             records.append(StepRecord(index, action, "blocked", "Unknown action; blocked by default"))
             return RuntimeReport("blocked", tuple(records))
+        try:
+            payload = _validate_payload(step.payload)
+        except Exception as exc:
+            records.append(StepRecord(index, action, "failed", type(exc).__name__))
+            return RuntimeReport("failed", tuple(records))
         if action_requires_approval(action):
-            if approve is None or approve(action, step.payload) is not True:
+            try:
+                granted = approve is not None and approve(action, payload) is True
+            except Exception:
+                granted = False
+            if not granted:
                 records.append(StepRecord(index, action, "approval_required", "Specific approval was not granted"))
                 return RuntimeReport("approval_required", tuple(records))
 
@@ -120,7 +129,6 @@ def run_plan(
             records.append(StepRecord(index, action, "unavailable", "No trusted handler is registered"))
             return RuntimeReport("blocked", tuple(records))
         try:
-            payload = _validate_payload(step.payload)
             handler(payload)
         except Exception as exc:
             # Avoid copying exception text into the audit trail; it may contain
