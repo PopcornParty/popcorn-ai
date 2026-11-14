@@ -83,3 +83,16 @@ private temporary candidate directory, not a user's home directory or a live
 repository. It does not execute code or commands. The host must provide
 single-writer isolation; this path-level guard is not a substitute for an OS
 sandbox or protection against a concurrent hostile process.
+
+## Planner-to-workspace adapter
+
+`brain/src/workspace_tools.py` connects validated task plans to the restricted
+candidate workspace. Structured plans can read candidate files and write
+candidate code. Candidate writes do not require a separate approval because
+they are confined to the supplied workspace; they do not modify the live
+repository. The adapter preflights the complete plan and rejects unsupported
+tools before doing any work.
+
+The adapter currently does **not** execute tests, shell commands, Git actions,
+network requests, or deployments. Test execution remains unavailable until a
+fixed test-suite allowlist and an isolated execution host are implemented.
