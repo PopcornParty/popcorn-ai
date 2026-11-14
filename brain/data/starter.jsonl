@@ -8,3 +8,8 @@
 {"text":"HTML describes the structure of a web page. CSS controls its presentation and layout."}
 {"text":"A test checks whether software behaves as expected. Small tests help find regressions early."}
 {"text":"Debugging is the process of reproducing a problem, finding its cause, making a fix and testing again."}
+{"text":"Python example: def add(a, b): return a + b."}
+{"text":"JavaScript example: const total = 42; console.log(total);"}
+{"text":"HTML example: <h1>Hello</h1>."}
+{"text":"CSS example: .card { padding: 16px; border-radius: 8px; }"}
+{"text":"A software function should have a clear purpose, useful names, predictable inputs and outputs, and tests for important behaviour."}
