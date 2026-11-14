@@ -96,5 +96,57 @@ class WorkspaceToolsTests(unittest.TestCase):
             })
 
 
+    def test_plan_searches_only_candidate_workspace(self):
+        self.workspace.write_text(
+            "docs/guide.md",
+            "Popcorn AI uses a candidate workspace.\\nThe live site is separate.\\n",
+        )
+        self.workspace.write_text("src/other.py", "def unrelated():\\n    return 1\\n")
+        plan = TaskPlan.from_dict({
+            "goal": "Find candidate workspace notes",
+            "steps": [{
+                "title": "Search notes",
+                "description": "Search candidate files for workspace references",
+                "tool": "search_knowledge",
+                "arguments": {"query": "candidate workspace"},
+            }],
+        })
+        result = execute_workspace_plan(plan, self.workspace)
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.outputs[0]["tool"], "search_knowledge")
+        self.assertEqual(result.outputs[0]["results"][0]["path"], "docs/guide.md")
+        self.assertEqual(result.outputs[0]["results"][0]["matches"][0]["line"], 1)
+
+    def test_plan_returns_prepared_summary(self):
+        plan = TaskPlan.from_dict({
+            "goal": "Prepare a change summary",
+            "steps": [{
+                "title": "Summarise",
+                "description": "Return the prepared summary",
+                "tool": "summarise_result",
+                "arguments": {"summary": "Added bounded workspace search."},
+            }],
+        })
+        result = execute_workspace_plan(plan, self.workspace)
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.outputs[0], {
+            "tool": "summarise_result",
+            "summary": "Added bounded workspace search.",
+        })
+
+    def test_search_rejects_empty_query(self):
+        plan = TaskPlan.from_dict({
+            "goal": "Search",
+            "steps": [{
+                "title": "Search",
+                "description": "Search candidate files",
+                "tool": "search_knowledge",
+                "arguments": {"query": "   "},
+            }],
+        })
+        result = execute_workspace_plan(plan, self.workspace)
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.outputs, ())
+
 if __name__ == "__main__":
     unittest.main()
