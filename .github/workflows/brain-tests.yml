@@ -24,5 +24,7 @@ jobs:
         run: python brain/validate_dataset.py --data brain/data/starter.jsonl
       - name: Run short CPU training smoke test
         run: python brain/train.py --data brain/data/starter.jsonl --out /tmp/popcorn-smoke --max-iters 2 --batch-size 2 --block-size 16 --eval-interval 1 --device cpu
-      - name: Verify checkpoints
-        run: test -s /tmp/popcorn-smoke/latest.pt && test -s /tmp/popcorn-smoke/best.pt
+      - name: Run multi-category evaluation smoke test
+        run: python brain/eval_suite.py --checkpoint /tmp/popcorn-smoke/latest.pt --output /tmp/popcorn-smoke/evaluation-report.json --max-new-tokens 12
+      - name: Verify checkpoints and evaluation report
+        run: test -s /tmp/popcorn-smoke/latest.pt && test -s /tmp/popcorn-smoke/best.pt && test -s /tmp/popcorn-smoke/evaluation-report.json
