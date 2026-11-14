@@ -52,7 +52,21 @@ Checkpoints include the model weights, vocabulary and model configuration. Keep 
 
 ## Evaluation and safe improvement
 
-`evaluate.py` measures held-out next-character loss/perplexity. That is a useful training signal, **not proof of factual accuracy or coding ability**. Add separate human-reviewed coding and conversation tests before considering a model improvement successful.
+`evaluate.py` measures held-out next-character loss/perplexity. That is a useful training signal, **not proof of factual accuracy or coding ability**. `benchmark.py` runs a tiny coding-output smoke test using required text fragments; it does not execute code or verify semantic correctness. Use broader human-reviewed coding and conversation tests before considering a model improvement successful.
+
+Run the coding smoke test after training:
+
+```powershell
+python brain/benchmark.py --checkpoint brain/checkpoints/first-run/latest.pt
+```
+
+Run the unit tests from the brain directory:
+
+```powershell
+Set-Location brain
+python -m unittest discover -s tests -v
+Set-Location ..
+```
 
 This lab deliberately does not let the model rewrite or deploy its own code, access GitHub credentials, execute generated code, or promote new weights automatically. A future evolution service should run experiments in isolation, compare against fixed regression benchmarks, retain rollback checkpoints and require explicit approval before production changes.
 
