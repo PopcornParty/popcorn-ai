@@ -1,0 +1,10 @@
+{"text":"Python is a programming language. A variable stores a value. For example, score = 10 assigns the integer ten to the variable score."}
+{"text":"A Python function starts with the def keyword. Example: def greet(name): return f'Hello, {name}'."}
+{"text":"A list stores an ordered collection of values. Example: colours = ['red', 'blue', 'green']."}
+{"text":"A dictionary stores key and value pairs. Example: player = {'name': 'Alex', 'score': 12}."}
+{"text":"A loop repeats instructions. The for keyword iterates over items in an iterable."}
+{"text":"An if statement runs a block when its condition is true. Use else for the alternative branch."}
+{"text":"JavaScript declares a constant with const and a reassignable variable with let."}
+{"text":"HTML describes the structure of a web page. CSS controls its presentation and layout."}
+{"text":"A test checks whether software behaves as expected. Small tests help find regressions early."}
+{"text":"Debugging is the process of reproducing a problem, finding its cause, making a fix and testing again."}
