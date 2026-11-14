@@ -1,44 +1,33 @@
 # Popcorn AI
 
-Popcorn AI is a personal, browser-based AI chat workspace.
+Popcorn AI is a personal, browser-based AI chat workspace with an experimental from-scratch model research lab.
 
 ## Live setup
 
 - Frontend: Vercel
-- AI endpoint: Cloudflare Worker
-- Model: Cloudflare Workers AI `@cf/zai-org/glm-4.7-flash`
-- Conversation history: saved in the browser's local storage
+- Existing AI endpoint: Cloudflare Worker
+- Existing model: Cloudflare Workers AI @cf/zai-org/glm-4.7-flash
+- Conversation history: current browser local storage
 - Optional server-side conversation logging: Cloudflare D1
 
-The browser calls the Vercel `/api/chat` endpoint. The Vercel function forwards requests to the Cloudflare Worker, so the Cloudflare endpoint is not called directly by client-side code.
+The browser calls Vercel /api/chat, which forwards requests to the existing Cloudflare Worker. The experimental model is not connected to live chat and does not replace this route.
 
-## Current interface features
+## Existing interface
 
-- Chat history with search
-- Create, rename and delete conversations
-- Export conversation history as JSON
-- Copy assistant replies and code blocks
-- Regenerate an assistant response
-- Attach supported text/code files (up to 150 KB per file; contents are included in the prompt)
+- Searchable chat history; create, rename and delete conversations
+- Export history as JSON; copy assistant replies and code blocks; regenerate replies
+- Text/code attachments up to 150 KB per file
 - Responsive desktop and mobile layout
-- Existing `popcorn_chats` browser history format is retained
+- Existing popcorn_chats browser history format retained
 
-## Deployment
+## Experimental Popcorn Brain
 
-The frontend is deployed through Vercel from GitHub. Changes pushed to the production branch deploy to the main site; changes on feature branches may receive a Vercel preview deployment if preview deployments are enabled.
+The brain/ directory contains a small decoder-only Transformer, byte-level tokenizer, resumable training pipeline, checkpoints, evaluation, coding smoke benchmark, explicit-consent memory prototype, validated task planning, safe patch proposals and an evidence-based improvement gate.
 
-The API proxy is in `api/chat.js`. It forwards chat requests to the Cloudflare Worker at `https://popcorn-ai.popcornparty1yt.workers.dev/api/chat`.
+The GitHub Actions workflow named Popcorn Brain Cloud Training can run small CPU experiments on GitHub-hosted runners and save checkpoint artifacts. This requires no local installation or download on your PC. These experiments are not frontier-model training; the included dataset is only a smoke-test corpus.
 
-The Cloudflare Worker requires:
-- Workers AI binding named `AI`
-- D1 binding named `DB` (used for rate limits and optional message logging)
+See brain/README.md for architecture, cloud workflow and limitations.
 
-## Important limitations
+## Important boundaries
 
-This version is an AI chat workspace, not yet an autonomous coding agent. It does not currently have permission to inspect or edit GitHub repositories, run code, or deploy projects on its own. File attachments currently support text-based files only. Chat history in the sidebar is stored in the current browser and does not automatically sync between devices.
-
-Cloudflare's free usage is subject to provider quotas and limits.
-
-## Experimental from-scratch model lab
-
-The repository now includes `brain/`, a separate PyTorch character-level Transformer experiment with its own tokenizer, training loop, checkpointing, text generation and validation-loss evaluator. It is an early research prototype, not a production chat model. The live chat path remains unchanged and continues to use the Cloudflare Worker model until a separately hosted Popcorn model is trained, evaluated and deliberately integrated. See [brain/README.md](brain/README.md) for setup, dataset format and limitations.
+The live website still relies on its configured Cloudflare model and quotas. The experimental Popcorn model is not yet a production chatbot. The project does not autonomously execute generated code, access GitHub credentials, write to repositories, or deploy new model weights. Memory is a prototype and is not synced between devices.
