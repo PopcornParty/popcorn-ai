@@ -1,6 +1,9 @@
 name: Popcorn Agent Runtime Tests
 
 on:
+  push:
+    branches:
+      - "add-bounded-agent-runtime"
   pull_request:
     paths:
       - "brain/src/agent_runtime.py"
