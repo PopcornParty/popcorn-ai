@@ -16,8 +16,9 @@ class PlatformTests(unittest.TestCase):
    with self.assertRaises(MemoryConsentError): MemoryStore(Path(folder)/"m.db").remember("api_key = 'abcdefghijk12345'",kind="fact",source="chat",user_confirmed=True)
  def test_planner_rejects_unknown_tool(self):
   with self.assertRaises(ValueError): TaskPlan.from_dict({"goal":"x","steps":[{"title":"x","description":"x","tool":"shell"}]})
- def test_planner_requires_approval_for_patch(self):
-  with self.assertRaises(ValueError): TaskPlan.from_dict({"goal":"x","steps":[{"title":"patch","description":"edit","tool":"propose_patch"}]})
+ def test_candidate_patch_is_descriptive_and_does_not_need_live_approval(self):
+  plan=TaskPlan.from_dict({"goal":"x","steps":[{"title":"patch","description":"edit","tool":"propose_patch"}]})
+  self.assertFalse(plan.steps[0].requires_approval)
  def test_plan_round_trip(self):
   plan=TaskPlan.from_dict({"goal":"inspect","steps":[{"title":"Read","description":"Read files","tool":"read_repository_file"}]}); self.assertEqual(TaskPlan.from_dict(plan.to_dict()),plan)
  def test_code_task_and_safe_patch(self):
